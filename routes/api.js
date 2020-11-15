@@ -34,7 +34,7 @@ module.exports = function (app) {
   let findUpdateStock=(stockData, update, getPrice)=>{
 
     let incLike={};    // fill this object with optional increment or push to DB
-   
+    let dbLike=0;
       // increment like
       Stock.findOneAndUpdate(
       {name: stockData.name},
@@ -44,29 +44,36 @@ module.exports = function (app) {
           if(err){
             console.log(err,"line 37");
           }else{
-            console.log("doc from DB is ",(doc.ips.length));
+            console.log("doc from DB # of ips saved is ",(doc.ips.length));
             //add like and ips to our stockData object to check ips 
             
             console.log("includes ip "+doc.ips.includes(stockData.ip));
             if(doc.ips.includes(stockData.ip)){
-              update=false;
+              update=false;        // if ip already has like saved, we don't update the DB
             };
-            stockData.like=doc.like;
+            dbLike=doc.like;  // load up the likes for this stock
+            console.log("DB like field", dbLike)  
+            // load price into our object stockData
+            //getPrice(stockData);
+            //return stockData;
           }
 
         });
     
-    
+        stockData.like=dbLike;
+        
     
         // load price into our object stockData
-        stockData.price=getPrice(stockData.name);
+        stockData=getPrice(stockData);
         
+        console.log("line 68 likes here?", stockData);
          //get ip address = ip
    
     
          // see if in DB already
         if(update){        // if we are sending a like
           //increment likes and push IP address
+          console.log("about to update likes and IP address");
           Stock.findOneAndUpdate(
             {name: stockData.name},
             {$inc: { like: 1 }, $push:{ ips: stockData.ip}},
@@ -75,15 +82,16 @@ module.exports = function (app) {
               if(err){
                 console.log(err);
               }else
-                 stockData.like=doc.like;          // tricky-here I've added total 
-                 console.log("likes are"+doc.like);
+                 dbLike=doc.like;          
+                 console.log("likes are"+dbLike);
             }) 
           }
+        console.log("Sending back @ line 84 ",stockData);
         return stockData;
     
   }
   
-  let getPrice=(stockName)=>{
+  let getPrice=(stockData)=>{
     //let xhr=new XMLHttpRequest();
     //let requestURL = https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/[symbol]/quote
    // xhr.open('GET', requestURL, true)// async=true
@@ -92,7 +100,9 @@ module.exports = function (app) {
       // add price to stockDoc object stockDoc[stock][price]
     
      // }
-    return 1;
+    
+    stockData.price=1;
+    return stockData;
   } 
   
     app.route('/api/stock-prices')
@@ -112,6 +122,8 @@ module.exports = function (app) {
       if (req.query){
         stock=req.query.stock;
         like=req.query.like;
+        if(!like)
+          like=false;
         console.log("query is "+stock+"like is "+like);
       }
       // if (req.body){
@@ -128,18 +140,24 @@ module.exports = function (app) {
       stockData.ip=userIp.split(",")[0];
       console.log("stock is type: "+typeof(stock));
       
-      if(typeof(stock)===Object){
+      if(typeof(stock)=='object'){
         twoStocks=true;
-        console.log("it's an object"+stock);
-        stock1.name=Object.keys(stock)[0][0];
-        stock2.name=Object.keys(stock)[0][1];
-        if(like){
+        console.log("1st stock is "+stock[0]);
+        stock1.ip=stockData.ip;
+        stock2.ip=stockData.ip;
+        stock1.stock=stock[0];
+        stock2.stock=stock[1];
+        console.log("objects are ",stock1,stock2);
+        
+        
+       
           stock1=findUpdateStock(stock1, like, getPrice);
           stock2=findUpdateStock(stock2, like, getPrice);
-          
+          console.log("line 149 ",stock1);
+         if(like){
           stock1.relative=stock1.like-stock2.like;
           stock2.relative=stock2.like-stock1.like;
-          res.json({'stockData': stock1, stock2});  
+          return res.json({'2stockData': stock1, stock2});  
         }
         
       }else{// ie only 1 stock here:
@@ -147,6 +165,7 @@ module.exports = function (app) {
         stockData=findUpdateStock(stockData, like, getPrice);
       }
       console.log("response is: ", stockData);
+      delete(stockData.ip);
       res.json({'stockData' : stockData }); //./views/index.html');
     });
     
