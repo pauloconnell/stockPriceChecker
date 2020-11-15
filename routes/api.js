@@ -59,7 +59,7 @@ module.exports = function (app) {
           }
 
         });
-    
+        console.log("update is ",update);
         stockData.like=dbLike;
         
     
@@ -85,10 +85,11 @@ module.exports = function (app) {
                  dbLike=doc.like;          
                  console.log("likes are"+dbLike);
             }) 
+            stockData.like++;
           }
+    
         console.log("Sending back @ line 84 ",stockData);
         return stockData;
-    
   }
   
   let getPrice=(stockData)=>{
@@ -122,7 +123,7 @@ module.exports = function (app) {
       if (req.query){
         stock=req.query.stock;
         like=req.query.like;
-        if(!like)
+        if(!like)      // like may be undefined, so change to false
           like=false;
         console.log("query is "+stock+"like is "+like);
       }
@@ -157,7 +158,7 @@ module.exports = function (app) {
          if(like){
           stock1.relative=stock1.like-stock2.like;
           stock2.relative=stock2.like-stock1.like;
-          return res.json({'2stockData': stock1, stock2});  
+          return res.json({'2stockData': stock1, 'stockData':stock2});  
         }
         
       }else{// ie only 1 stock here:
