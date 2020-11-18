@@ -17,7 +17,10 @@ var stockData    ={};
 module.exports = function (app) {
    // connect to DB
   const CONNECTION_STRING ='mongodb+srv://paul:'+process.env.DB+'@cluster0.tjq8t.mongodb.net/stockPriceDB?retryWrites=true&w=majority'; //MongoClient.connect(CONNECTION_STRING, function(err, db) {});
-  mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true, useUnifiedTopology: true});
+  mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false});
   console.log("mongoDB is connected status = ");
   
   // define schema
@@ -33,33 +36,38 @@ module.exports = function (app) {
   //define DB function will check DB for this stock(upsert) if like=true, check IP to see if already liked, if not increment and update ip
   let findUpdateStock=(stockData, update, getPrice)=>{
 
-    let incLike={};    // fill this object with optional increment or push to DB
+
     let dbLike=0;
-      // increment like
-      Stock.findOneAndUpdate(
+     //look up stock in DB
+      Stock.findOne(
       {name: stockData.name},
-       { },  // no inc yet must check if this ip has been used already $inc: { like: 1 }
-        {new:true, upsert: true, useFindAndModify:false},
+      // { },  // no inc yet must check if this ip has been used already $inc: { like: 1 }
+        {new:true},
         (err, doc)=>{
           if(err){
             console.log(err,"line 37");
           }else{
-            console.log("doc from DB # of ips saved is ",(doc.ips.length));
-            //add like and ips to our stockData object to check ips 
-            
-            console.log("includes ip "+doc.ips.includes(stockData.ip));
-            if(doc.ips.includes(stockData.ip)){
-              update=false;        // if ip already has like saved, we don't update the DB
-            };
-            dbLike=doc.like;  // load up the likes for this stock
-            console.log("DB like field", dbLike)  
-            // load price into our object stockData
-            //getPrice(stockData);
-            //return stockData;
-          }
+              if(doc.ips){
+                console.log("doc from DB # of ips saved is ",(doc));
+                //add like and ips to our stockData object to check ips 
 
-        });
-    
+                console.log("includes ip "+doc.ips.includes(stockData.ip));
+                if(doc.ips.includes(stockData.ip)){
+                  update=false;        // if ip already has like saved, we don't update the DB
+                };
+                dbLike=doc.like;  // load up the likes for this stock
+                console.log("DB like field", dbLike)  
+                // load price into our object stockData
+                //getPrice(stockData);
+                //return stockData;
+                }  
+              }  
+          });
+        console.log("update is ",update);
+        if(!dbLike){
+          dbLike=0;
+        }
+          
         stockData.like=dbLike;
         
     
@@ -68,7 +76,7 @@ module.exports = function (app) {
         
         console.log("line 68 likes here?", stockData);
          //get ip address = ip
-   
+        console.log("like true?"+update);
     
          // see if in DB already
         if(update){        // if we are sending a like
@@ -81,14 +89,17 @@ module.exports = function (app) {
             (err,doc)=>{
               if(err){
                 console.log(err);
-              }else
-                 dbLike=doc.like;          
-                 console.log("likes are"+dbLike);
-            }) 
-          }
+              }else{
+                if(doc){
+                   dbLike=doc.like;          
+                   console.log(doc+" - doc and likes are"+dbLike);
+                }
+              }
+           })
+           stockData.like++;
+        }
         console.log("Sending back @ line 84 ",stockData);
         return stockData;
-    
   }
   
   let getPrice=(stockData)=>{
@@ -122,7 +133,7 @@ module.exports = function (app) {
       if (req.query){
         stock=req.query.stock;
         like=req.query.like;
-        if(!like)
+        if(!like)      // like may be undefined, so change to false
           like=false;
         console.log("query is "+stock+"like is "+like);
       }
@@ -157,7 +168,7 @@ module.exports = function (app) {
          if(like){
           stock1.relative=stock1.like-stock2.like;
           stock2.relative=stock2.like-stock1.like;
-          return res.json({'2stockData': stock1, stock2});  
+          return res.json({'2stockData': stock1, 'stockData':stock2});  
         }
         
       }else{// ie only 1 stock here:
