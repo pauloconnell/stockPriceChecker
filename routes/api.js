@@ -35,27 +35,30 @@ module.exports = function (app) {
   
   
   //define DB function will check DB for this stock(upsert) if like=true, check IP to see if already liked, if not increment and update ip
-  let findUpdateStock=async(stockData, update, nextStep)=>{
+  let findUpdateStock=async(stockPass, update, nextStep)=>{
 
 
     let dbLike=0;
+    console.log("42 about to look up in DB item: ", stockPass, update)
      //look up stock in DB
       await Stock.findOne(
-      {name: stockData.name},
+      {name: stockPass.name},
       // { },  // no inc yet must check if this ip has been used already $inc: { like: 1 }
       //  {new:true },
         (err, doc)=>{
           if(err){
             console.log(err,"line 37");
           }else{
-            console.log("just got our doc ", doc);
-            if (doc==null) return;  // incase this stock has not been added to DB yet
+            console.log("51 just got our doc ", doc);
+            if (doc==null){
+               console.log("new stock");     //return;  // incase this stock has not been added to DB yet
+            }else{
               if(doc.ips){
                 console.log("54 doc from DB # of ips saved is "+doc.ips.length,(doc.ips));
                 //add like and ips to our stockData object to check ips 
-
-                console.log("57 includes ip "+doc.ips.includes(stockData.ip));
-                if(doc.ips.includes(stockData.ip)){
+                //let localArray=doc.ips;
+                console.log("57 includes ip "+doc.ips.includes(stockPass.ip));
+                if(doc.ips.includes(stockPass.ip)){
                   update=false;        // if ip already has like saved, we don't update the DB
                 };
                 dbLike=doc.like;  // load up the likes for this stock
@@ -63,31 +66,32 @@ module.exports = function (app) {
                 // load price into our object stockData
                 //getPrice(stockData);
                 //return stockData;
-                }else console.log("66 no doc.ips yet", doc);  
+                }else console.log("66 err if no doc.ips yet here", doc);  //should never happen
               }  
+          }
           });
         console.log("69 update is "+update+"likes are "+dbLike);
         if(!dbLike){
           dbLike=0;
         }
           
-        stockData.like=dbLike;
+        stockPass.like=dbLike;
         
-    
+    console.log("80 likes here?", stockPass);
         // load price into our object stockData
-        stockData=nextStep(stockData);    // will be getPrice if 1 stock or build response if 2 stocks
+        stockPass=nextStep(stockPass);    // will be getPrice if 1 stock or build response if 2 stocks
         
-        console.log("79 likes here?", stockData);
+        console.log("84 likes here?", stockPass);
          //get ip address = ip
-        console.log("82 update true?"+update);
+        console.log("86 update true?"+update);
     
          // see if in DB already
         if(update){        // if we are sending a like
           //increment likes and push IP address
           console.log("87 about to update likes and IP address");
           Stock.findOneAndUpdate(
-            {name: stockData.name},
-            {$inc: { like: 1 }, $push:{ ips: stockData.ip}},
+            {name: stockPass.name},
+            {$inc: { like: 1 }, $push:{ ips: stockPass.ip}},
             {new:true, upsert:true, useFindAndModify:false},
             (err,doc)=>{
               if(err){
@@ -95,17 +99,17 @@ module.exports = function (app) {
               }else{
                 if(doc){
                    dbLike=doc.like;          
-                   console.log(doc+" - doc and likes are"+dbLike);
+                   console.log("102",doc+" - doc and likes are"+dbLike);
                 }
               }
            })
-           stockData.like++;
+           stockPass.like++;
         }
-        console.log("104 Sending back @ line 84 ",stockData);
-        return stockData;
+        console.log("104 Sending back ",stockPass);
+        return stockPass;
   }
   
-  let getPrice=(stockData)=>{
+  let getPrice=(stockPass)=>{
     //let xhr=new XMLHttpRequest();
     //let requestURL = https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/[symbol]/quote
    // xhr.open('GET', requestURL, true)// async=true
@@ -115,21 +119,23 @@ module.exports = function (app) {
     
      // }
     
-    stockData.price=1;
-    return stockData;
+    stockPass.price=1;
+    return stockPass;
   } 
   
-  let buildResponse=(stockData)=>{
+  let buildResponse=(stockPass)=>{
    
     //compose response object in stockData for 2 stocks - 1 stock at a time
-    stockArray.push(getPrice(stockData));  //load stock array with this stock's data
-    return stockData;
+    stockArray.push(getPrice(stockPass));  //load stock array with this stock's data
+    return stockPass;
   }
   
     app.route('/api/stock-prices')
     .get(async function (req, res){
+      
+      
       stockData={};  // clear our object for new data
-      stockArray=[]  // " "
+      stockArray=[];  // " "
       var stock;
       var like=0;
       var like1=0;  //relative likes
@@ -159,13 +165,13 @@ module.exports = function (app) {
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||
      (req.connection.socket ? req.connection.socket.remoteAddress : null);
-      console.log("ip is type: "+typeof(userIp));
+      console.log("166 ip is type: "+typeof(userIp));
       stockData.ip=userIp.split(",")[0];    // convert to array, pull the first element out = user ip address
-      console.log("stock is type: "+typeof(stock));
+      console.log(" 169 stock is type: "+typeof(stock));
       
       if(typeof(stock)=='object'){//ie. we have 2 stocks here
         twoStocks=true;
-        console.log("168 1st stock is "+stock[0]);
+        console.log("172 1st stock is "+stock[0]);
         stock1.ip=stockData.ip;
         stock2.ip=stockData.ip;
         stock1.name=stock[0];
@@ -175,8 +181,8 @@ module.exports = function (app) {
         stock1=await findUpdateStock(stock1, like, buildResponse);
         console.log("176 StockArray has ", stockArray);
         stock2=await findUpdateStock(stock2, like, buildResponse);
-        console.log("179 likes ", stock1.like, stock2.like,stockArray);
-        if(like){
+        console.log("179 likes and stockArray: ", stock1.like, stock2.like,stockArray);
+        if(twoStocks){   // If 2 stocks set relative likes locally
           stock1.relativeLikes=stock1.like-stock2.like;
           stock2.relativeLikes=stock2.like-stock1.like;
           delete(stock1.like);
