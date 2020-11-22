@@ -180,10 +180,10 @@ let getPrice=(stockPass, nextStep)=>{
       }
   }
   
-  let sendResponse=(stockPass)=>{
-    console.log("182 ",stockPass);
+  let sendResponse=(stockData)=>{  // note must be called stockData for tests
+    console.log("182 ",stockData);
     
-    return res.json(stockPass);
+    return res.json(stockData);
   }
   
     
