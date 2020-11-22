@@ -207,14 +207,14 @@ let getPrice=(stockPass, nextStep)=>{
         stock=req.query.stock;
         like=req.query.like; 
       } 
-      if(req.body){
+      if(req.body.stock){
         stock=req.body.stock;
         like=req.body.like;
-        console.log("we are in the body");
+        console.log("190we are in the body", req.body);
       }
       if(!like)  {    // like may be undefined, so change to false
         like=false;
-        console.log("190 query is "+stock+"like is "+like);
+        console.log("199 query is "+stock+"like is "+like);
       }
     
     // load up user ip address
