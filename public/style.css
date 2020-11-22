@@ -8,15 +8,23 @@ form {
   background-color:lightgrey;
   border-radius:10px;
   width:auto;
+  display:inline;
+
 }
 h1, h2, h3{
   text-align:center;
+}
+
+span {
   background-color: white;
   border-radius:10px;
-  
+  margin: 5px;
 }
+
 
 .grey {
    background-color: grey;
-  border-radius:10px;
-}
+  border-radius:5px;
+  margin: 5px;
+ }
+
