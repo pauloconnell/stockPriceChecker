@@ -205,10 +205,15 @@ let getPrice=(stockPass, nextStep)=>{
       console.log("189 handling API");
       if (req.query){
         stock=req.query.stock;
-        like=req.query.like;
-        
-        if(!like)      // like may be undefined, so change to false
-          like=false;
+        like=req.query.like; 
+      } 
+      if(req.body){
+        stock=req.body.stock;
+        like=req.body.like;
+        console.log("we are in the body");
+      }
+      if(!like)  {    // like may be undefined, so change to false
+        like=false;
         console.log("190 query is "+stock+"like is "+like);
       }
     
