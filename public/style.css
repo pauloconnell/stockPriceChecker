@@ -5,7 +5,7 @@ body {
    background-image: url(https://res.cloudinary.com/pollie/image/upload/v1606077858/backgroundStocks_qvbkuh.jpg);
 }
 form {
-  background-color:lightgrey;
+  
   border-radius:10px;
   width:auto;
   display:inline;
@@ -28,3 +28,6 @@ span {
   margin: 5px;
  }
 
+.light {
+  background-color: lightgrey;
+}
