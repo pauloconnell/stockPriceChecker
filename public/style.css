@@ -1,0 +1,30 @@
+
+
+body {
+  text-align:center;
+   background-image: url(https://res.cloudinary.com/pollie/image/upload/v1606077858/backgroundStocks_qvbkuh.jpg);
+}
+form {
+  background-color:lightgrey;
+  border-radius:10px;
+  width:auto;
+  display:inline;
+
+}
+h1, h2, h3{
+  text-align:center;
+}
+
+span {
+  background-color: white;
+  border-radius:10px;
+  margin: 5px;
+}
+
+
+.grey {
+   background-color: grey;
+  border-radius:5px;
+  margin: 5px;
+ }
+
