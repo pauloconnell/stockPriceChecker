@@ -21,39 +21,44 @@
     <div id="testui" style="margin-left: 5%">
       <h2 style="text-align: center"><span>Front-End:</span></h2>
       <h3><span>Get single price and total likes</span></h3>
-      <form id="testForm2" class="border" action="/api/stock-prices"
+      <span><form id="testForm2" class="border" action="/api/stock-prices"
       method="GET">
         <input type="text" name="stock" placeholder="goog" style="width: 100px" required="">
         <input type="checkbox" name="like" value="true"> Like?<br>
         <button type="submit">Get Price!</button>
-      </form>
+      </form></span>
       <hr>
       <h3><span>Compare and get relative likes</span></h3>
+      <span>
       <form id="testForm" class="border" action="/api/stock-prices"
       method="GET">
         <input type="text" name="stock" placeholder="goog" style="width: 100px" required="">
         <input type="text" name="stock" placeholder="msft" style="width: 100px" required="">
         <input type="checkbox" name="like" value="true"> Like both?<br>
         <button type="submit">Get Price!</button>
-      </form><br><br>
+      </form></span><br><br>
       <hr>
       
         
       
-      <span>
-        API will retrieve Stock Price Results, and # of likes from unique ip addresses:
+      <span class="grey">
+        API will retrieve Stock Price Results, and # of likes only 1 like per unique ip addresses
       </span>
       
       <code id="jsonResult"></code>
     </div>
-    <hr style="margin: 50px; margin-top: 200px">
-    <span class="grey">API to query with automation/manually :<br><br>
-      <b>/api/stock-prices</b><br>
-      example:
-      /api/stock-prices?stock=goog&stock=msft&like=true
+    <br><br>
       
-    </span>
-    <hr>
+    <h2><span class="light">
+      
+      API to query with automation/manually :  </span></h2>
+      <br><br>
+    <span class="light"><b>/api/stock-prices</b><br>
+    example:
+    /api/stock-prices?stock=goog&stock=msft&like=true
+  </span>
+    
+      <hr>
       <div id="userstories" class="grey" style="margin-left: 5%; margin-top: 5%">
         <h3>User Stories</h3>
       <ol>

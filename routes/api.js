@@ -1,10 +1,3 @@
-/*
-*
-*
-*       Complete the API routing below
-*
-*
-*/
 
 'use strict';
 
@@ -36,18 +29,13 @@ module.exports = function (app) {
   app.route('/api/stock-prices')
     .get(function (req, res){
     
-  var stockData    ={};
-  var stockArray   =[];
-  
-    
+    var stockData    ={};
+    var stockArray   =[];
     //define some methods to use on our route:
-    
-    
     //handle like stock
     let handleLikes=(stockPass, nextStep)=>{
-    
-          //increment likes and push IP address
-      console.log("50 about to update likes and IP address");
+      //increment likes and push IP address
+      console.log("/api line 38 about to update likes and IP address");
       Stock.findOneAndUpdate(
         {name: stockPass.name},
         {$inc: { like: 1 }, $push:{ ips: stockPass.ip}},
@@ -57,52 +45,48 @@ module.exports = function (app) {
             console.log(err);
           }else{
             if(doc){
-//                   dbLike=doc.like;          
                stockPass.like=doc.like
-               console.log("62",doc+" - doc and likes are"+doc.like);
+               console.log("52",doc+" - is our doc, and likes are"+doc.like);
                getPrice(stockPass, nextStep);      
             }else{
-              console.log("65 error?  new doc created");  // should be upserted and returned so never run
+              console.log("55 error?  new doc created");  // should be upserted and returned so never run
             }
           }
        })
     }
 
-    //define DB function will check DB for this stock(upsert) if like=true, check IP to see if already liked, if not increment and update ip
+    //define DB function will check DB for this stock(upsert if not there) if like=true, check IP to see if already liked, if not increment and update ip
     let findUpdateStock=(stockPass, update, nextStep)=>{
     let dbLike=0;
-    
-      
-    
-    console.log("72 about to look up in DB item: ", stockPass, update)
+    console.log("62 about to look up in DB item: ", stockPass, update)
      //look up stock in DB to get likes data
       Stock.findOne(
       {name: stockPass.name},
-      // { },  // no inc yet must check if this ip has been used already $inc: { like: 1 }
+      // { },  // no 'inc likes' yet - must check if this ip has been used already $inc: { like: 1 }
       //  {new:true },
         (err, doc)=>{
           if(err){
-            console.log(err,"line 87");
+            console.log(err,"line 69");
           }else{
-            console.log("88 just got our doc ", stockPass.name, doc);
+            console.log("72 just got our doc ", stockPass.name, doc);
             if (doc==null){
-               console.log("89 new stock");     //return;  // incase this stock has not been added to DB yet
-                if(update){
+               console.log("74 new stock");     //return;  // incase this stock has not been added to DB yet
+                if(update){  // essentially update = True means we have a like to handle
                   handleLikes(stockPass, nextStep)
                 }else{
                     stockPass.like=0; // add field to avoid errors
-                    console.log("94 stockPass is ", stockPass);  //should never happen
+                    console.log("79 stockPass is ", stockPass);  //should never happen
                     getPrice(stockPass, nextStep);
                 }
             }else{
               if(doc.ips){
-                console.log("94 doc from DB # of ips saved is "+doc.ips.length,(doc.ips));
+                console.log("84 doc from DB # of ips saved is "+doc.ips.length,(doc.ips));
                 //add like and ips to our stockData object to check ips 
                 //let localArray=doc.ips;
-                console.log("97 includes ip "+doc.ips.includes(stockPass.ip));
+                console.log("87 includes ip "+doc.ips.includes(stockPass.ip));
                 if(doc.ips.includes(stockPass.ip)){
                   update=false;        // if ip already has like saved, we don't update the DB
-                };
+                };                     // NOTE: update was passed to us, so will be pre-set true if like is clicked
                 
                 stockPass.like=doc.like;  // load up the likes for this stock
                 console.log("102 DB like field / update: ", doc.like, update)  
@@ -214,7 +198,7 @@ let getPrice=(stockPass, nextStep)=>{
       }
       if(!like)  {    // like may be undefined, so change to false
         like=false;
-        console.log("199 query is "+stock+"like is "+like);
+        console.log("201 query is "+stock+"like is "+like);
       }
     
     // load up user ip address
@@ -238,8 +222,8 @@ let getPrice=(stockPass, nextStep)=>{
        //   handleLikes(stock1, buildResponse);
        //   handleLikes(stock2, buildResponse); 
        
-          findUpdateStock(stock1, like, buildResponse);
-          findUpdateStock(stock2, like, buildResponse);
+          findUpdateStock(stock1, like, buildResponse);  // call back buildResponse used for 2 stocks
+          findUpdateStock(stock2, like, buildResponse);  // so we can adjust relative likes for stocks
        
         
 //        stock1=findUpdateStock(stock1, like, buildResponse);
@@ -248,12 +232,8 @@ let getPrice=(stockPass, nextStep)=>{
       }else{// ie only 1 stock here:
         stockData.name=stock;
         console.log("line 237 sending single stock: ", stockData, like)
-        //if(like){
-        //  handleLikes(stockData, sendResponse);  //handling likes in findUpdateStock()
-        //}else{
-          findUpdateStock(stockData, like, sendResponse);
+        findUpdateStock(stockData, like, sendResponse);  //callBack sendResponse used for 1 stock
        
-          //res.json({stockData});
       }
       
     });

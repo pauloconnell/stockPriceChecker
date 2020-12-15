@@ -16,6 +16,15 @@ var app = express();
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //For FCC testing purposes only
+
+ // // Helmet middleware.
+ //    app.use(helmet.contentSecurityPolicy({
+ //        directives: {
+ //          defaultSrc: ["'self'"],
+ //          scriptSrc: ["'self'", "localhost", "*.jquery.com", "'unsafe-inline'"],
+ //          scriptSrcElem: ["'self'", "localhost", "*.jquery.com", "'unsafe-inline'"],
+ //          styleSrc: ["'self'", "localhost", "'unsafe-inline'"]
+ //        }}));
 app.use(helmet.contentSecurityPolicy({ 
   directives: { //defaultSrc: ["'self'"], 
               scriptSrc: ["'self'"], 
