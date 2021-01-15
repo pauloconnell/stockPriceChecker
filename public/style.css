@@ -21,6 +21,9 @@ span {
   margin: 5px;
 }
 
+ol {
+ text-align:left;
+}
 
 .grey {
    background-color: grey;
@@ -30,4 +33,17 @@ span {
 
 .light {
   background-color: lightgrey;
+}
+
+.lookLikeSpan {
+  background-color: grey;
+  border-radius:10px;
+  margin: 5px;
+  align_items:left;
+  display: inline-block;
+}
+
+#testUI {
+  margin: auto;
+
 }

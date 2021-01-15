@@ -2,12 +2,17 @@
 <html>
   <head>
     <title>Welcome to Nasdaq Stock Price Checker!</title>
-    <meta name="description" content="A cool thing made with HyperDev">
-    <link id="favicon" rel="icon" href="https://hyperdev.com/favicon-app.ico" type="image/x-icon">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./public/style.css">
+    <meta name="description" content="A cool thing made with HyperDev" />
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://hyperdev.com/favicon-app.ico"
+      type="image/x-icon"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./public/style.css" />
   </head>
   <body>
     <header>
@@ -15,74 +20,158 @@
         <span> ISQA_5 - Nasdaq Stock Price Checker</span>
       </h1>
     </header>
-  
-    
-    <hr style="margin: 50px">
-    <div id="testui" style="margin-left: 5%">
-      <h2 style="text-align: center"><span>Front-End:</span></h2>
+
+    <hr style="margin: 50px" />
+    <div id="testUI">
+      <h2>
+        <div class="lookLikeSpan" style="text-align: left">
+          <span>Simple Full Stack App that does 4 things:</span><br />
+          <ol>
+            <li>
+              Accepts POST to get stock symbols, then hits API to get updated
+              stock price<br />
+            </li>
+            <li>
+              Connects to database to keep track of likes of each stock(and IP
+              address of each like)<br />
+            </li>
+            <li>
+              Extracts IP address of user to ensure only 1 like per IP
+              address<br />
+            </li>
+            <li>
+              Future project- also record stock price in dataBase for comparison
+            </li>
+          </ol>
+        </div>
+      </h2>
+    </div>
+    <div class="lookLikeSpan">
       <h3><span>Get single price and total likes</span></h3>
-      <span><form id="testForm2" class="border" action="/api/stock-prices"
-      method="GET">
-        <input type="text" name="stock" placeholder="goog" style="width: 100px" required="">
-        <input type="checkbox" name="like" value="true"> Like?<br>
-        <button type="submit">Get Price!</button>
-      </form></span>
-      <hr>
+      <span
+        ><form
+          id="testForm2"
+          class="border"
+          action="/api/stock-prices"
+          method="GET"
+        >
+          <input
+            type="text"
+            name="stock"
+            placeholder="goog"
+            style="width: 100px"
+            required=""
+          />
+          <input type="checkbox" name="like" value="true" /> Like?<br />
+          <button type="submit">Get Price!</button>
+        </form></span
+      >
+    </div>
+    <hr />
+    <div class="lookLikeSpan">
       <h3><span>Compare and get relative likes</span></h3>
       <span>
-      <form id="testForm" class="border" action="/api/stock-prices"
-      method="GET">
-        <input type="text" name="stock" placeholder="goog" style="width: 100px" required="">
-        <input type="text" name="stock" placeholder="msft" style="width: 100px" required="">
-        <input type="checkbox" name="like" value="true"> Like both?<br>
-        <button type="submit">Get Price!</button>
-      </form></span><br><br>
-      <hr>
-      
-        
-      
-      <span class="grey">
-        API will retrieve Stock Price Results, and # of likes only 1 like per unique ip addresses
-      </span>
-      
-      <code id="jsonResult"></code>
+        <form
+          id="testForm"
+          class="border"
+          action="/api/stock-prices"
+          method="GET"
+        >
+          <input
+            type="text"
+            name="stock"
+            placeholder="goog"
+            style="width: 100px"
+            required=""
+          />
+          <input
+            type="text"
+            name="stock"
+            placeholder="msft"
+            style="width: 100px"
+            required=""
+          />
+          <input type="checkbox" name="like" value="true" /> Like both?<br />
+          <button type="submit">Get Price!</button>
+        </form></span
+      >
     </div>
-    <br><br>
-      
-    <h2><span class="light">
-      
-      API to query with automation/manually :  </span></h2>
-      <br><br>
-    <span class="light"><b>/api/stock-prices</b><br>
-    example:
-    /api/stock-prices?stock=goog&stock=msft&like=true
-  </span>
-    
-      <hr>
-      <div id="userstories" class="grey" style="margin-left: 5%; margin-top: 5%">
-        <h3>User Stories</h3>
+    <br /><br />
+    <hr />
+
+    <div class="lookLikeSpan">
+      <span>
+        API will retrieve Stock Price Results, and # of likes only 1 like per
+        unique ip address
+      </span>
+
+      <code id="jsonResult"></code>
+
+      <br /><br />
+
+      <h2>
+        <span class="light"> API to query with automation/manually : </span>
+      </h2>
+      <br /><br />
+      <span class="light"
+        ><h2>
+        <b>/api/stock-prices</b></h2><br>
+        example: /api/stock-prices?stock=goog&stock=msft&like=true<br>
+      </span>
+    </div>
+    <hr />
+    <div id="userstories" class="grey" style="margin-left: 5%; margin-top: 5%">
+      <h3>User Stories</h3>
       <ol>
-        <li>Set the content security policies to only allow loading of scripts and css from your server.</li>
-        <li>I can <b>GET</b> <code>/api/stock-prices</code> with form data containing a Nasdaq <i>stock</i> ticker and recieve back an object <i>stockData</i>.</li>
-        <li>In <i>stockData</i>, I can see the <i>stock</i>(string, the ticker), <i>price</i>(decimal in string format), and <i>likes</i>(int).</li>
-        <li>I can also pass along field <i>like</i> as <b>true</b>(boolean) to have my like added to the stock(s). Only 1 like per ip should be accepted.</li>
-        <li>If I pass along 2 stocks, the return object will be an array with both stock's info but instead of <i>likes</i>, it will display <i>rel_likes</i>(the difference between the likes on both) on both.</li>
-        <li>A good way to receive current price is the following external API(replacing 'GOOG' with your stock): <code>https://finance.google.com/finance/info?q=NASDAQ%3aGOOG</code></li>
+        <li>
+          Set the content security policies to only allow loading of scripts and
+          css from your server.
+        </li>
+        <li>
+          I can <b>GET</b> <code>/api/stock-prices</code> with form data
+          containing a Nasdaq <i>stock</i> ticker and recieve back an object
+          <i>stockData</i>.
+        </li>
+        <li>
+          In <i>stockData</i>, I can see the <i>stock</i>(string, the ticker),
+          <i>price</i>(decimal in string format), and <i>likes</i>(int).
+        </li>
+        <li>
+          I can also pass along field <i>like</i> as <b>true</b>(boolean) to
+          have my like added to the stock(s). Only 1 like per ip should be
+          accepted.
+        </li>
+        <li>
+          If I pass along 2 stocks, the return object will be an array with both
+          stock's info but instead of <i>likes</i>, it will display
+          <i>rel_likes</i>(the difference between the likes on both) on both.
+        </li>
+        <li>
+          A good way to receive current price is the following external
+          API(replacing 'GOOG' with your stock):
+          <code>https://finance.google.com/finance/info?q=NASDAQ%3aGOOG</code>
+        </li>
         <li>All 5 functional tests are complete and passing.</li>
       </ol>
       <h3>Example usage:</h3>
-      <code>/api/stock-prices?stock=goog</code><br>
-      <code>/api/stock-prices?stock=goog&amp;like=true</code><br>
-      <code>/api/stock-prices?stock=goog&amp;stock=msft</code><br>
-      <code>/api/stock-prices?stock=goog&amp;stock=msft&amp;like=true</code><br>
+      <code>/api/stock-prices?stock=goog</code><br />
+      <code>/api/stock-prices?stock=goog&amp;like=true</code><br />
+      <code>/api/stock-prices?stock=goog&amp;stock=msft</code><br />
+      <code>/api/stock-prices?stock=goog&amp;stock=msft&amp;like=true</code
+      ><br />
       <h3>Example return:</h3>
-      <code>{"stockData":{"stock":"GOOG","price":"786.90","likes":1}}</code><br>
-      <code>{"stockData":[{"stock":"MSFT","price":"62.30","rel_likes":-1},{"stock":"GOOG","price":"786.90","rel_likes":1}]}</code>
+      <code>{"stockData":{"stock":"GOOG","price":"786.90","likes":1}}</code
+      ><br />
+      <code
+        >{"stockData":[{"stock":"MSFT","price":"62.30","rel_likes":-1},{"stock":"GOOG","price":"786.90","rel_likes":1}]}</code
+      >
     </div>
     <!-- Your web-app is https, so your scripts need to be too -->
-    <script src="https://code.jquery.com/jquery-2.2.1.min.js"
-            integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
-            crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-2.2.1.min.js"
+      integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+      crossorigin="anonymous"
+    ></script>
     <script>
       $(function() {
         $('#testFormABORT').submit(function(e) {
@@ -96,7 +185,7 @@
               $('#jsonResult').text(JSON.stringify(data));
             }
           });
-         
+
         });
         $('#testForm2').submit(function(e) {
           e.preventDefault();
@@ -108,9 +197,9 @@
               $('#jsonResult').text(JSON.stringify(data));
             }
           });
-        
+
         });
       });
-   </script>
+    </script>
   </body>
 </html>
